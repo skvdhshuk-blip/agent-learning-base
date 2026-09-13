@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">第一章：阿简第一次查天气</title>
+  <desc id="desc">课程正文页预览，介绍模型如何调用天气工具。</desc>
+  <rect width="960" height="540" fill="#f7f1e6"/>
+  <rect width="960" height="50" fill="#fffaf2"/>
+  <text x="56" y="31" font-family="Arial, PingFang SC, sans-serif" font-size="18" fill="#36312b">← 学习地图</text>
+  <rect y="50" width="960" height="202" fill="#ca663c"/>
+  <text x="64" y="105" font-family="Arial, PingFang SC, sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="#fce7dc">CHAPTER 01</text>
+  <text x="64" y="164" font-family="Arial, PingFang SC, sans-serif" font-size="48" font-weight="700" fill="#fffaf2">阿简第一次查天气</text>
+  <text x="64" y="207" font-family="Arial, PingFang SC, sans-serif" font-size="21" fill="#fff2eb">从一条天气问题出发，看懂模型如何决定调用工具、接收结果并继续行动</text>
+  <rect x="64" y="292" width="832" height="184" rx="12" fill="#fffaf2" stroke="#e8d8c4"/>
+  <text x="96" y="334" font-family="Arial, PingFang SC, sans-serif" font-size="25" font-weight="700" fill="#36312b">情境犯错：把会聊天，当成会办事</text>
+  <text x="96" y="378" font-family="Arial, PingFang SC, sans-serif" font-size="20" fill="#514940">小问问：「杭州今天会下雨吗？如果会，提醒我带伞。」</text>
+  <text x="96" y="414" font-family="Arial, PingFang SC, sans-serif" font-size="20" fill="#514940">阿简提醒：模型先提出调用请求，应用执行工具后再把结果交回模型。</text>
+  <rect x="96" y="436" width="166" height="8" rx="4" fill="#ca663c"/>
+</svg>

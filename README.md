@@ -10,6 +10,10 @@
   <img src="https://image.thum.io/get/width/1200/crop/675/noanimate/https://zpm2icatsjk5m.ok.kimi.link/" alt="课程首页：Agent 原来这么简单" width="800">
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/chapter-01.svg" alt="第一章：阿简第一次查天气" width="800">
+</p>
+
 ## 内容
 
 课程由 10 个章节组成。每章包含情境故事、选择题、核心解释、常见故障复盘、伪代码、练习和章末问答：
