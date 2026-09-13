@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/chapter-01.jpg" alt="第一章课程页实际截图：阿简第一次查天气" width="200">
+  <img src="docs/screenshots/chapter-02.png" alt="第二章课程页实际截图：把秘密贴在用户消息后面" width="800">
 </p>
 
 ## 内容
