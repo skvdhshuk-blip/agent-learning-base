@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.625rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+/* ---- Agent 原来这么简单 · custom theme ---- */
+:root {
+  --paper: #f6f2e5;
+  --ink: #3e3832;
+  --c-green: #2c6469;
+  --c-purple: #b20155;
+  --c-orange: #df6536;
+  --c-blue: #3469a1;
+  --c-yellow: #ebb137;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  /* subtle paper grain via repeating gradient */
+  background-image:
+    radial-gradient(rgba(62, 56, 50, 0.035) 1px, transparent 1px),
+    radial-gradient(rgba(62, 56, 50, 0.025) 1px, transparent 1px);
+  background-size: 22px 22px, 46px 46px;
+  background-position: 0 0, 11px 23px;
+}
+
+.font-serif-sc {
+  font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+}
+
+.font-mono-code {
+  font-family: 'IBM Plex Mono', Menlo, Consolas, monospace;
+}
+
+::selection {
+  background: var(--c-yellow);
+  color: var(--ink);
+}
+
+/* highlight-bar link hover: underline grows from 1px to thick */
+.hl-link {
+  position: relative;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease, color 0.25s ease;
+  padding-bottom: 2px;
+}
+.hl-link:hover {
+  background-size: 100% 0.55em;
+  background-position: 0 88%;
+}
+
+/* hand-drawn card: 2px ink border + offset shadow, slight rotation option */
+.ink-card {
+  border: 2px solid var(--ink);
+  background: #fffdf6;
+  box-shadow: 5px 5px 0 rgba(62, 56, 50, 0.9);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ink-card-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 rgba(62, 56, 50, 0.9);
+}
+
+/* dashed hand-drawn connector */
+.dashed-ink {
+  border-style: dashed;
+  border-color: rgba(62, 56, 50, 0.55);
+}
+
+/* chapter sticker number */
+.chapter-stamp {
+  font-family: 'IBM Plex Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+/* marquee */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee-x 36s linear infinite;
+}
+
+/* gentle bob for characters */
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+  50% { transform: translateY(-8px) rotate(var(--tilt, 0deg)); }
+}
+.animate-bob {
+  animation: bob 4s ease-in-out infinite;
+}
+
+/* pulse ring on active loop node */
+@keyframes loop-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(223, 101, 54, 0.45); }
+  70% { box-shadow: 0 0 0 14px rgba(223, 101, 54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(223, 101, 54, 0); }
+}
+.loop-active {
+  animation: loop-pulse 1.2s ease-out infinite;
+}
+
+/* quiz option */
+.quiz-opt {
+  border: 2px solid var(--ink);
+  background: #fffdf6;
+  transition: all 0.15s ease;
+}
+.quiz-opt:not(:disabled):hover {
+  transform: translateX(4px);
+}
+.quiz-opt.correct {
+  background: #e3efe6;
+  border-color: var(--c-green);
+}
+.quiz-opt.wrong {
+  background: #f7e3dd;
+  border-color: var(--c-purple);
+  opacity: 0.85;
+}
+
+/* code block */
+.code-block {
+  background: #2f2b26;
+  color: #f0ead6;
+  border: 2px solid var(--ink);
+  box-shadow: 5px 5px 0 rgba(62, 56, 50, 0.85);
+}
+
+/* syntax highlight tokens (warm palette on dark ink) */
+.tok-key { color: #8ecae6; }
+.tok-str { color: #a9dc76; }
+.tok-num { color: #f78c6c; }
+.tok-lit { color: #ff9cac; }
+.tok-kw  { color: #d3a6e8; }
+.tok-fn  { color: #ffd866; }
+.tok-var { color: #6fd3d0; }
+.tok-com { color: #8a8578; font-style: italic; }
+
+/* ticket edge for bug theater */
+.ticket {
+  background:
+    linear-gradient(135deg, transparent 8px, #fffdf6 0) top left,
+    linear-gradient(-135deg, transparent 8px, #fffdf6 0) top right,
+    linear-gradient(45deg, transparent 8px, #fffdf6 0) bottom left,
+    linear-gradient(-45deg, transparent 8px, #fffdf6 0) bottom right;
+  background-size: 51% 51%;
+  background-repeat: no-repeat;
+}
