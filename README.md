@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/chapter-01.svg" alt="第一章：阿简第一次查天气" width="800">
+  <img src="docs/screenshots/chapter-01.jpg" alt="第一章课程页实际截图：阿简第一次查天气" width="200">
 </p>
 
 ## 内容
