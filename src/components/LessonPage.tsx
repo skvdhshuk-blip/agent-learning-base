@@ -34,7 +34,7 @@ const whoStyle: Record<string, { color: string; icon: typeof Bird; side: 'left' 
 
 function Dialogue({ lines, color }: { lines: DialogueLine[]; color: string }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {lines.map((l, i) => {
         if (l.who === 'narrator') {
           return (
@@ -173,14 +173,14 @@ function QuizBlock({
 function SectionBody({ s, color }: { s: Section; color: string }) {
   const headerFg = accentTextColor(color);
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {s.paragraphs?.map((p, i) => (
         <p key={i} className="leading-loose text-[15px] md:text-base opacity-90">
           <RichText text={p} />
         </p>
       ))}
       {s.bullets && (
-        <ul className="space-y-2.5">
+        <ul className="space-y-3">
           {s.bullets.map((b, i) => (
             <li key={i} className="flex gap-3 leading-relaxed text-[15px] md:text-base">
               <span
@@ -195,13 +195,17 @@ function SectionBody({ s, color }: { s: Section; color: string }) {
         </ul>
       )}
       {s.diagram && (
-        <div className="my-5">
+        <div className="py-2">
           <ChapterDiagram id={s.diagram} />
         </div>
       )}
-      {s.code && <CodeBlock code={s.code} />}
+      {s.code && (
+        <div className="pt-1 pb-2">
+          <CodeBlock code={s.code} />
+        </div>
+      )}
       {s.table && (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto py-1">
           <table className="w-full text-sm md:text-base border-2" style={{ borderColor: 'var(--ink)' }}>
             <thead>
               <tr style={{ background: color, color: headerFg }}>
@@ -255,72 +259,78 @@ function SectionBody({ s, color }: { s: Section; color: string }) {
 function SectionBlock({
   s,
   color,
+  isFirst,
   open,
   onToggle,
 }: {
   s: Section;
   color: string;
+  isFirst: boolean;
   open: boolean;
   onToggle: () => void;
 }) {
   if (s.advanced) {
     return (
       <div
-        className="mt-8 rounded-2xl border-2 dashed-ink overflow-hidden"
-        style={{ background: '#f3ecdb' }}
+        className="pt-2"
       >
-        <button
-          type="button"
-          onClick={onToggle}
-          className="w-full text-left px-5 py-4 flex items-start gap-3 transition-colors hover:bg-black/[0.03]"
-          aria-expanded={open}
+        <div
+          className="rounded-2xl border-2 dashed-ink overflow-hidden"
+          style={{ background: '#f3ecdb' }}
         >
-          <div
-            className="shrink-0 w-9 h-9 rounded-lg border-2 flex items-center justify-center mt-0.5"
-            style={{ borderColor: 'var(--ink)', background: '#fffdf6', color: 'var(--c-purple)' }}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="w-full text-left px-5 py-4 flex items-start gap-3 transition-colors hover:bg-black/[0.03]"
+            aria-expanded={open}
           >
-            <Wrench className="w-4 h-4" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span
-                className="chapter-stamp text-[11px] font-bold px-2 py-0.5 rounded-full"
-                style={{ background: '#f7e9ef', color: 'var(--c-purple)' }}
-              >
-                工程深潜 · 上线再看
-              </span>
-              <span className="chapter-stamp text-xs opacity-55">
-                {open ? '点击收起' : '选读 · 点击展开'}
-              </span>
+            <div
+              className="shrink-0 w-9 h-9 rounded-lg border-2 flex items-center justify-center mt-0.5"
+              style={{ borderColor: 'var(--ink)', background: '#fffdf6', color: 'var(--c-purple)' }}
+            >
+              <Wrench className="w-4 h-4" />
             </div>
-            {s.heading && (
-              <h3 className="font-serif-sc font-black text-lg md:text-xl mt-1.5 leading-snug">
-                {s.heading}
-              </h3>
-            )}
-            {s.advancedSummary && !open && (
-              <p className="text-xs md:text-sm opacity-75 mt-1 leading-relaxed">
-                <RichText text={s.advancedSummary} />
-              </p>
-            )}
-          </div>
-          <span className="shrink-0 mt-2 opacity-70">
-            {open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-          </span>
-        </button>
-        {open && (
-          <div className="px-5 pb-6 pt-4 border-t-2 dashed-ink bg-[#fffdf6]/85">
-            <SectionBody s={s} color={color} />
-          </div>
-        )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className="chapter-stamp text-[11px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ background: '#f7e9ef', color: 'var(--c-purple)' }}
+                >
+                  工程深潜 · 上线再看
+                </span>
+                <span className="chapter-stamp text-xs opacity-55">
+                  {open ? '点击收起' : '选读 · 点击展开'}
+                </span>
+              </div>
+              {s.heading && (
+                <h3 className="font-serif-sc font-black text-lg md:text-xl mt-1.5 leading-snug">
+                  {s.heading}
+                </h3>
+              )}
+              {s.advancedSummary && !open && (
+                <p className="text-xs md:text-sm opacity-75 mt-1 leading-relaxed">
+                  <RichText text={s.advancedSummary} />
+                </p>
+              )}
+            </div>
+            <span className="shrink-0 mt-2 opacity-70">
+              {open ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+            </span>
+          </button>
+          {open && (
+            <div className="px-5 pb-6 pt-5 border-t-2 dashed-ink bg-[#fffdf6]/85">
+              <SectionBody s={s} color={color} />
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-5 ${s.heading && !isFirst ? 'pt-6' : ''}`}>
       {s.heading && (
-        <h3 className="font-serif-sc font-black text-2xl mt-10 flex items-center gap-3">
+        <h3 className="font-serif-sc font-black text-2xl flex items-center gap-3">
           <span className="inline-block w-8 h-1.5 rounded-full shrink-0" style={{ background: color }} />
           <span>{s.heading}</span>
         </h3>
@@ -353,7 +363,7 @@ function ExerciseBlock({
       <p className="text-sm md:text-base mt-3 leading-relaxed opacity-85">
         <RichText text={ex.intro} />
       </p>
-      <div className="mt-4 space-y-2">
+      <div className="mt-5 space-y-3">
         {ex.steps.map((s, i) => (
           <label
             key={i}
@@ -387,7 +397,7 @@ function QABlock({ lesson }: { lesson: Lesson }) {
         <h3 className="font-serif-sc font-black text-xl">章末自测 · {qa.length} 问</h3>
         <span className="chapter-stamp text-xs opacity-50 ml-auto">先自己想，再点开</span>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {qa.map((item, i) => (
           <div key={i} className="ink-card overflow-hidden">
             <button
@@ -598,15 +608,18 @@ export default function LessonPage({
               </button>
             )}
           </div>
-          {lesson.core.map((s, i) => (
-            <SectionBlock
-              key={i}
-              s={s}
-              color={lesson.color}
-              open={Boolean(openAdvanced[i])}
-              onToggle={() => setOpenAdvanced((prev) => ({ ...prev, [i]: !prev[i] }))}
-            />
-          ))}
+          <div className="mt-6 space-y-6">
+            {lesson.core.map((s, i) => (
+              <SectionBlock
+                key={i}
+                s={s}
+                color={lesson.color}
+                isFirst={i === 0}
+                open={Boolean(openAdvanced[i])}
+                onToggle={() => setOpenAdvanced((prev) => ({ ...prev, [i]: !prev[i] }))}
+              />
+            ))}
+          </div>
         </section>
 
         {/* quote */}
@@ -682,10 +695,10 @@ export default function LessonPage({
               <MessageSquareQuote className="w-6 h-6" style={{ color: inkAccent }} />
               <h2 className="font-serif-sc font-black text-2xl">{lesson.code.title}</h2>
             </div>
-            <CodeBlock code={lesson.code.code} className="md:p-6" />
+            <CodeBlock code={lesson.code.code} className="md:px-6 md:py-5" />
             {lesson.code.note && (
               <p
-                className="mt-3 text-sm leading-relaxed opacity-75 pl-4 border-l-4"
+                className="mt-5 text-sm leading-relaxed opacity-75 pl-4 border-l-4"
                 style={{ borderColor: lesson.color }}
               >
                 <RichText text={lesson.code.note} />

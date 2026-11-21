@@ -11,8 +11,8 @@ export function ContextDiagram() {
     { name: '历史层', desc: '成对对话、快照与末尾增量提醒', no: '无关旧聊天或破坏前缀的回改', color: '#8a6d00' },
   ];
   return (
-    <div className="grid md:grid-cols-[1fr_auto_1fr] gap-5 items-center">
-      <div className="space-y-2.5">
+    <div className="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+      <div className="space-y-3.5">
         {layers.map((l) => (
           <div key={l.name} className="ink-card p-3 flex items-center gap-3">
             <span
@@ -92,7 +92,7 @@ export function TSMDiagram() {
   ];
   return (
     <div>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-5">
         {cols.map((c) => (
           <div key={c.name} className="ink-card p-5 text-center relative overflow-hidden">
             <div className="w-full h-2 absolute top-0 left-0" style={{ background: c.color }} />
@@ -147,7 +147,7 @@ export function MemoryDiagram() {
   ];
   return (
     <div>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-5">
         {tiers.map((t) => (
           <div key={t.name} className="ink-card p-5">
             <p className="font-serif-sc font-black text-xl" style={{ color: t.color }}>
@@ -249,7 +249,7 @@ export function LoopGuardDiagram() {
         <ShieldCheck className="w-5 h-5" style={{ color: 'var(--c-orange)' }} />
         <p className="chapter-stamp text-xs font-bold opacity-75">PRODUCTION GUARDRAILS · 循环四道护栏</p>
       </div>
-      <div className="grid sm:grid-cols-2 gap-3.5">
+      <div className="grid sm:grid-cols-2 gap-4">
         {guards.map((g) => (
           <div key={g.no} className="ink-card p-4">
             <div className="flex items-center gap-2">
@@ -297,7 +297,7 @@ export function CompactTiersDiagram() {
         <Layers className="w-5 h-5" style={{ color: 'var(--c-purple)' }} />
         <p className="chapter-stamp text-xs font-bold opacity-75">COMPACTION FUNNEL · 成本由低到高三阶压缩</p>
       </div>
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {tiers.map((t, i) => (
           <div key={t.step}>
             <div className="ink-card p-4 flex flex-col sm:flex-row sm:items-start gap-3">
@@ -313,14 +313,14 @@ export function CompactTiersDiagram() {
               </div>
             </div>
             {i < tiers.length - 1 && (
-              <div className="flex justify-center py-1 opacity-55">
+              <div className="flex justify-center pt-3 pb-1 opacity-55">
                 <ArrowDown className="w-4 h-4" />
               </div>
             )}
           </div>
         ))}
       </div>
-      <div className="mt-4 px-4 py-3 rounded-lg border-2 dashed-ink bg-[#fffdf6] text-xs md:text-sm leading-relaxed">
+      <div className="mt-5 px-4 py-3 rounded-lg border-2 dashed-ink bg-[#fffdf6] text-xs md:text-sm leading-relaxed">
         <strong>压缩落地四重置：</strong>
         清零旧 token 用量锚点 · 失效旧提取游标 · 过期 Skill 标为需重读 · 锁定硬约束留在结构化字段
       </div>
@@ -344,11 +344,11 @@ export function SubagentFlowDiagram() {
         </p>
       </div>
 
-      <div className="flex justify-center py-2 opacity-60">
+      <div className="flex justify-center pt-3 pb-2 opacity-60">
         <ArrowDown className="w-4 h-4" />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-3.5">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div className="ink-card p-4" style={{ borderTopWidth: 5, borderTopColor: 'var(--c-green)' }}>
           <p className="chapter-stamp text-xs font-bold" style={{ color: 'var(--c-green)' }}>
             ≤ 5 秒完成 · 快路径

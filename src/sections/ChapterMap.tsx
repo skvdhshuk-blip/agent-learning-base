@@ -46,7 +46,7 @@ export default function ChapterMap({
           每章节奏一致：先看小问犯个错，猜一道题热身，再顺着图解读懂核心主线；想了解线上兜底细节时，展开每章里的「工程深潜」卡即可。做完章末自测，这章就算吃透了。
         </p>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
           {lessons.map((ch, i) => {
             const meta = chapterMeta[ch.id];
             const stageStyle = STAGE_STYLE[meta.stage];

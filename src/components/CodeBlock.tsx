@@ -30,9 +30,14 @@ function tokenizeJson(code: string): Tok[] {
   for (const m of code.matchAll(JSON_RE)) {
     const i = m.index!;
     if (i > last) out.push({ text: code.slice(last, i) });
-    if (m[1] !== undefined) out.push({ text: m[1], cls: m[2] ? 'tok-key' : 'tok-str' });
-    else if (m[3] !== undefined) out.push({ text: m[3], cls: 'tok-num' });
-    else out.push({ text: m[4], cls: 'tok-lit' });
+    if (m[1] !== undefined) {
+      out.push({ text: m[1], cls: m[2] ? 'tok-key' : 'tok-str' });
+      if (m[2]) out.push({ text: m[2] });
+    } else if (m[3] !== undefined) {
+      out.push({ text: m[3], cls: 'tok-num' });
+    } else {
+      out.push({ text: m[4], cls: 'tok-lit' });
+    }
     last = i + m[0].length;
   }
   if (last < code.length) out.push({ text: code.slice(last) });
@@ -95,14 +100,16 @@ function tokenizePseudo(code: string): Tok[] {
 export default function CodeBlock({ code, className = '' }: { code: string; className?: string }) {
   const [copied, setCopied] = useState(false);
 
+  const cleanCode = useMemo(() => code.replace(/^\n+|\n+$/g, ''), [code]);
+
   const { lang, nodes } = useMemo<{ lang: Lang; nodes: ReactNode[] }>(() => {
-    const detected = detectLang(code);
+    const detected = detectLang(cleanCode);
     const toks =
       detected === 'json'
-        ? tokenizeJson(code)
+        ? tokenizeJson(cleanCode)
         : detected === 'yaml'
-          ? tokenizeYaml(code)
-          : tokenizePseudo(code);
+          ? tokenizeYaml(cleanCode)
+          : tokenizePseudo(cleanCode);
     return {
       lang: detected,
       nodes: toks.map((t, i) =>
@@ -115,11 +122,11 @@ export default function CodeBlock({ code, className = '' }: { code: string; clas
         ),
       ),
     };
-  }, [code]);
+  }, [cleanCode]);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(cleanCode);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -128,7 +135,7 @@ export default function CodeBlock({ code, className = '' }: { code: string; clas
   };
 
   return (
-    <div className="code-block rounded-xl overflow-hidden">
+    <div className="code-block rounded-xl overflow-hidden mb-2">
       <div
         className="flex items-center justify-between px-4 py-2 text-[11px] font-mono-code border-b"
         style={{
@@ -158,7 +165,7 @@ export default function CodeBlock({ code, className = '' }: { code: string; clas
         </button>
       </div>
       <pre
-        className={`p-4 md:p-5 font-mono-code text-xs md:text-sm overflow-x-auto leading-relaxed ${className}`}
+        className={`px-4 py-3.5 md:px-5 md:py-4 font-mono-code text-xs md:text-sm overflow-x-auto leading-relaxed ${className}`}
       >
         {nodes}
       </pre>

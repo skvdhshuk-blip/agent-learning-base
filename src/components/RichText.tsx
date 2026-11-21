@@ -35,7 +35,7 @@ export default function RichText({
       parts.push(
         <code
           key={idx}
-          className="font-mono-code text-[0.88em] px-1.5 py-0.5 rounded mx-0.5 align-baseline"
+          className="font-mono-code text-[0.86em] px-1.5 py-[1px] rounded mx-0.5 align-baseline"
           style={
             tone === 'dark'
               ? {
