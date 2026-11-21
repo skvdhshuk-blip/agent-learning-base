@@ -11,7 +11,7 @@ BASE="${ECS_BASE:-/opt/agent-learning}"
 PUBLIC_HOST="${PUBLIC_HOST:-agent.skwang.uk}"
 DIRECT_URL="${DIRECT_URL:-https://47.97.41.141.sslip.io/agent-learning/}"
 
-npx eslint src/data src/sections src/App.tsx
+npx eslint src/App.tsx src/pages src/data src/sections src/lib src/components/LessonPage.tsx src/components/CodeBlock.tsx src/components/RichText.tsx src/components/ChapterDiagrams.tsx
 npm run build
 
 ts=$(date -u +%Y%m%dT%H%M%SZ)

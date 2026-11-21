@@ -63,26 +63,33 @@ export const lessons3: Lesson[] = [
 }`,
       },
       {
-        heading: '回顾与压缩不是「一言不合就全篇重写」：三阶省钱法',
+        heading: '回顾应由事件触发，不只看轮数',
         paragraphs: [
-          '比固定「每 5 或 10 轮」更可靠的触发点包括：完成一个里程碑、计划发生变化、收到巨大工具输出、上下文按动态阈值逼近上限（扣除预留输出与安全缓冲后）、出现冲突证据、准备执行高风险动作、或即将交给另一个 Agent。',
-          '工程上通常用成本由低到高的三阶压缩组合，避免动不动花大钱重写全篇：① 最快路径是直接采用后台顺手提炼的会话工作笔记（Session Memory），只要它有效且比原历史短，就保留近期几组交互、其余直接换掉，零额外摘要费用；② 次快路径是轻量微压缩（Microcompact），先把几轮以前臃肿的工具长输出折成简短占位（同时留意超过约 1 小时缓存窗口的自然过期节点），不调模型就腾出大量空间；③ 只有空间依然吃紧，才调用模型生成结构化任务快照，并在触发前先用同一套系统前缀与工具定义走缓存、同时禁用工具调用，防止模型摘要到一半跑去调工具。',
-          '哪怕预算估算失手、请求依然撞上供应商的「输入超长（Prompt Too Long）」限制，反应式降级压缩也不能乱删首行消息——必须按「完整 API 交互轮次组（一次模型调用 + 其全部配对 tool_result）」整组从头部淘汰，死守工具调用的成对完整性。',
+          '比固定「每 5 或 10 轮」更可靠的触发点包括：**完成一个里程碑、计划发生变化、收到巨大工具输出、上下文按动态阈值逼近上限、出现冲突证据、准备执行高风险动作，或即将交给另一个 Agent**。',
+          '回顾内容不该每次复制全文，而是更新结构化任务快照，并保留版本号与证据引用，让接班者一眼分清哪份最新。',
         ],
-      },
-      {
-        heading: '三层长任务记录与压缩后的四个重置',
         table: {
-          head: ['层级', '保存什么', '是否常驻上下文', '用途与重置规则'],
+          head: ['层级', '保存什么', '是否常驻上下文', '用途'],
           rows: [
-            ['当前工作集', '下一步所需指令、状态、证据', '是', '决定眼前动作；压缩后只保留成对的近期轮次'],
-            ['任务快照', '目标、约束、进度、决策、待办', '里程碑或压缩时加载', '恢复与交接；需同步置零旧用量估算、更新游标并标废过时技能正文'],
-            ['原始档案', '完整消息、日志、文件、工具结果', '否，按需读取', '审计、断电重建与纠错'],
+            ['**当前工作集**', '下一步所需指令、状态、证据', '是', '决定眼前动作；压缩后只保留成对的近期轮次'],
+            ['**任务快照**', '目标、约束、进度、决策、待办', '里程碑或压缩时加载', '恢复与交接；需同步更新锚点与技能新鲜度'],
+            ['**原始档案**', '完整消息、日志、文件、工具结果', '否，按需读取', '审计、断电重建与纠错'],
           ],
         },
+      },
+      {
+        heading: '三阶省钱压缩、按轮淘汰与四大禁区',
+        advanced: true,
+        advancedSummary: '如何按「工作笔记直通 -> 微压缩 -> user 角色总结」逐阶控费，以及超长 413 必须按完整 API 轮次淘汰。',
+        diagram: 'compact-tiers',
+        bullets: [
+          '**第一阶 · 工作笔记直通（零摘要开销）**：若后台已维护有效且更短的 `Session Memory`，直接保留近期几组交互、其余整段替换。',
+          '**第二阶 · 轻量微压缩（Microcompact）**：把几轮前臃肿的大块工具输出折叠为短占位符（留意跨约 1 小时缓存窗口的自然过期），不动系统前缀即可释放大半空间。',
+          '**第三阶 · 完整摘要与按轮回退**：复用系统前缀与工具列表命中缓存、同时禁调工具；若仍撞上 `Prompt Too Long`，务必按**完整 API 交互轮次组（模型调用 + 全部配对 `tool_result`）**从头淘汰，死守配对完整性。',
+        ],
         callout: {
           title: '生产环境总结出的压缩四大禁区',
-          text: '① 触发摘要的最后一条指令务必用 user 角色提交（很多新模型接口禁止用 assistant 开头续写预填充）；② 只有「完整、非空、纯文本」的摘要答复才准替换历史；③ 给连续压缩失败加熔断次数上限（如 3 次）和防递归标记，绝不无限重压；④ 压缩完毕立刻把曾加载在旧历史里的复杂 Skill 正文标为过时（触发下次重读），不要期待自然语言压缩能保住逐字规范。',
+          text: '① 触发摘要的末条指令务必用 `user` 角色提交（新模型常拒绝 `assistant` 预填充）；② 只有**完整、非空、纯文本**答复才准替换历史；③ 连续失败加熔断次数上限（如 3 次）与防递归锁；④ 压缩完毕立刻清零用量锚点、失效旧游标，并把被洗出窗口的 Skill 标为需重读。',
         },
       },
     ],
@@ -109,25 +116,23 @@ export const lessons3: Lesson[] = [
     },
     code: {
       title: '最小伪代码：三阶压缩与反应式按轮回退',
-      code: `$state = TaskState::load($taskId);
-$archive = Transcript::append($taskId, $newEvents);
-$budgetThreshold = min($modelWindow, $hardCap) - $outputReserve - $safetyBuffer;
+      code: `state = load_task_state(task_id)
+append_transcript(task_id, new_events)
+threshold = min(model_window, HARD_CAP) - output_reserve - safety_buffer
 
-if ($state->milestoneReached() || Context::estimatedTokensWithAnchor() >= $budgetThreshold) {
+if state.milestone_reached or estimated_tokens_with_anchor() >= threshold:
     // 1. 优先尝试后台工作笔记快路径（零摘要模型开销）
-    if (!Snapshot::trySessionMemoryFastPath($taskId, $keepRecentRounds)) {
+    if not try_session_memory_fast_path(task_id, keep_recent_rounds):
         // 2. 先微压缩清理陈旧的大块工具输出；仍超再触发大模型完整总结
-        $trimmed = Context::microcompactOldToolOutputs($taskId);
-        if (Context::stillOver($budgetThreshold)) {
-            $summary = Snapshot::compactWithUserRoleAndNoTools($taskId); // 连续失败 3 次则熔断
-        }
-    }
-    $reset = Snapshot::invalidateUsageAnchorAndStaleSkills($taskId);
-}
+        microcompact_old_tool_outputs(task_id)
+        if still_over_budget(threshold):
+            compact_with_user_role_no_tools(task_id)  // 连续失败 3 次则熔断
+    invalidate_usage_anchor_and_stale_skills(task_id)
+
 // 3. 若仍撞见 Prompt-Too-Long，按完整 API 轮次组从头淘汰，不拆散 tool_use/tool_result
-$messages = Context::trimOldestApiRoundsOnOverflow($taskId, $maxRetries = 3);
-return Agent::continue($messages);`,
-      note: '关键防线：会话工作笔记快路径省钱、微压缩不动主前缀、完整摘要必须用 user 角色发且只认完整纯文本、超长回退整组按轮次裁剪、压缩后必须同步失效旧锚点与技能状态。',
+messages = trim_oldest_api_rounds_on_overflow(task_id, max_retries=3)
+return continue_agent(messages)`,
+      note: '关键防线：会话工作笔记快路径省钱、微压缩不动主前缀、完整摘要必须用 `user` 角色发且只认完整纯文本、超长回退整组按轮次裁剪、压缩后必须同步失效旧锚点与技能状态。',
     },
     exercise: {
       title: '动手练习：给一个长任务做断电与压缩故障演练',
@@ -201,8 +206,9 @@ return Agent::continue($messages);`,
       },
       {
         heading: '状态要少而明确',
+        diagram: 'async',
         paragraphs: [
-          '常见状态可以是 queued、running、succeeded、failed、cancel_requested、cancelled，加上对外部效果存疑时的 outcome_unknown（结果未知）。状态转换应由代码控制，而不是模型自由写一段「似乎完成了」。成功要有结果引用，失败要有机器可读错误码和给人的说明，取消要区分「已提出」与「已生效」。任务进入终态后，不应再回到运行中；同时服务开机自检时，要把断电遗留在 running 的僵尸任务重置回 queued 或结算异常，不让它们永远挂在半空。',
+          '常见状态可以是 `queued`、`running`、`succeeded`、`failed`、`cancel_requested`、`cancelled`，加上对外部效果存疑时的 `outcome_unknown`（结果未知）。状态转换由确定性代码控制，进入终态后不再回到运行中；服务开机自检时，也要把断电遗留在 `running` 的僵尸任务复位。',
           '落到数据库里，一条任务记录大概是这个样子：',
         ],
         code: `{
@@ -218,34 +224,31 @@ return Agent::continue($messages);`,
         table: {
           head: ['字段', '作用', '常见错误'],
           rows: [
-            ['job_id', '查询同一任务', '每次查询生成新 ID'],
-            ['owner_id', '权限隔离', '只凭 job ID 即可读取'],
-            ['idempotency_key', '按 (轮次任务ID, 调用ID, 批序号) 唯一生成并去重', '只在前端禁用按钮，或拿多轮重复的 call_0 当键'],
-            ['status', '驱动状态机与停泊恢复', '用自由文本表示状态，无 outcome_unknown 兜底'],
-            ['progress', '展示阶段、脉搏与可测进展', '让模型猜百分比'],
-            ['result_ref', '定位最终产物与并发更新版本号', '把大文件塞回聊天'],
-            ['error_code', '决定能否重试，并保留已创资源 ID', '所有失败都写「未知错误」'],
+            ['`job_id`', '查询同一任务', '每次查询生成新 ID'],
+            ['`owner_id`', '权限隔离', '只凭 job ID 即可读取'],
+            ['`idempotency_key`', '按 `(轮次任务ID, 调用ID, 批序号)` 唯一生成并去重', '只在前端禁用按钮，或拿多轮重复的 `call_0` 当键'],
+            ['`status`', '驱动状态机与停泊恢复', '用自由文本表示状态，无 `outcome_unknown` 兜底'],
+            ['`progress`', '展示阶段、脉搏与可测进展', '让模型猜百分比'],
+            ['`result_ref`', '定位最终产物与并发更新版本号', '把大文件塞回聊天'],
+            ['`error_code`', '决定能否重试，并保留已创资源 ID', '所有失败都写「未知错误」'],
           ],
         },
-      },
-      {
-        heading: '对话正忙时用户又说话了：排队 vs 立即打断，只停在安全点',
-        paragraphs: [
-          '一个常见并发事故：Agent 还在后台调工具或等结果，用户忍不住又发一条消息。如果直接再开一条独立推理循环，两条循环会同时篡改同一段对话历史！',
-          '生产级系统会把新消息拆成两档控制：① 普通「排队（Queue）」：把用户新话连同当时冻结下来的会话配置暂存队列，待本轮彻底结束再自动出队续跑（如果本轮正在等用户点选审批问题，或者用户点了「停止」，就先暂停自动出队）；② 「立即插队（Send Now / Preempt）」：只优雅中断正在流式吐字的模型响应，正做完一半的小工具让它收个尾、正在跑的付费长任务改成停泊挂起而不粗暴杀死，等走到安全检查点（新一轮开场前、一整批 tool_result 全部收齐后、或纯文本回答结束前——绝不插在 tool_use 与 tool_result 中间！）再把插队消息与刚收到的任务回执一并注入上下文。',
-          '流式推送也要配合前端恢复：后端将高密度的输出增量合并批量落盘（同时用内存快照覆盖读取接口，防止用户刷新丢掉刚吐出来还没落库的那几句），SSE 流携带单调递增的 revision 与重置历史纪元（history_epoch），断线重连或用户回退重放时绝不拼出半截乱码。',
-        ],
-      },
-      {
-        heading: '幂等、租约锁与进程树清理',
-        paragraphs: [
-          '幂等的意思是：同一业务意图重复提交，不产生第二份副作用。除了按（轮次 ID + 调用全局 ID + 操作序号）固定生成幂等键并在网络重试、页面刷新和本地命令行回执日记本里复用外，Worker 在提交终态或资产修改的数据库事务里还要做「租约令牌 + 未取消」双复核（Lease Fencing）：哪怕旧任务在取消请求发出前零点几秒跑出结果，进不了事务就写不覆盖取消状态。',
-          '真要强杀运行中的命令类子进程时，注意普通 kill 只杀父壳进程、会把里面的孙进程留成后台孤儿；Unix 系统要按进程组（-pgid）整树清理。如果是按 Cron 定时触发的无头 Agent，给模型的定时指令也要写成明确的第二人称行动要求（不要像通知标语那样让模型原话复读出来），遇到配置无效跳过时也必须推进下一次执行时间，以免定时调度器陷入每秒重试空转。',
-        ],
         callout: {
           title: '超时与崩溃后的诚实边界',
-          text: '客户端没收到响应，只能证明连接没有按时返回，不能证明服务器没有执行；本地进程在非幂等外部命令执行途中崩溃重启后，也无法凭空断言那步是否生效，应诚实标出「结果未知（outcome_unknown）」先查单再补救。',
+          text: '客户端没收到响应，只能证明连接没有按时返回，不能证明服务器没有执行；非幂等外部命令执行途中崩溃重启若无法确认效果，应诚实标出 `outcome_unknown` 先查单再补救。',
         },
+      },
+      {
+        heading: '并发插队安全点、租约栅栏、进程树清理与流式追平',
+        advanced: true,
+        advancedSummary: '对话正忙时怎么处理「排队 vs Send Now 插队」、为什么写库事务内要复核租约、Unix -pgid 强杀与 SSE revision 对齐。',
+        bullets: [
+          '**普通排队（Queue）**：Agent 正忙时用户又发消息，把新话连同当时冻结的会话配置暂存队列，本轮结束后自动续跑；若本轮停在人机确认或用户点击停止，则暂停自动出队。',
+          '**立即插队（Send Now / Preempt）**：只中断正在流式吐字的模型请求，已快完的小工具让它收尾、耗时付费任务改成停泊挂起而不粗暴杀死，**严格等走到安全检查点**（本轮开场前、整批 `tool_result` 收齐后、纯文本答复前——绝不插在 `tool_use` 与 `tool_result` 中间）再合并注入。',
+          '**租约栅栏（Lease Fencing）与进程组清理**：Worker 提交终态或写入资产的数据库事务里必须复核「租约令牌一致 + 未请求取消」，挡住已被取消的旧 Worker 覆盖结果；强杀命令行子进程在 Unix 上按进程组（`-pgid`）整树回收，防孙进程孤儿后台烧钱。',
+          '**流式合批缓冲与 SSE 追平**：服务端把高频输出增量合批落盘并用内存快照覆盖读取接口防刷新丢字；SSE 携带单调 `revision` 与 `history_epoch`，断线重连或回退重放无缝对齐。',
+          '**定时任务（Cron）小细节**：发给无头定时 Agent 的提示词写成明确的第二人称行动指令（防模型照念通知标语），遇无效配置跳过时仍推进 `next_run_at` 防空转热点。',
+        ],
       },
     ],
     analogy: {
@@ -272,34 +275,30 @@ return Agent::continue($messages);`,
     },
     code: {
       title: '最小伪代码：安全点插队 + 短等停泊 + 租约写入',
-      code: `$job = Job::findByDeterministicKey($turnJobId, $toolUseUuid, $opIndex);
-if ($job) return JobView::from($job);
-$job = DB::transaction(function () use ($userId, $key) {
-    $job = Job::createUnique($userId, $key, 'queued');
-    Outbox::append('job.queued', $job->id);
-    return $job;
-});
-// 若短等窗口内未完成，立刻停泊让出 Worker 并在终态回调唤醒
-if ($job->waitBriefly(5) == 'still_running') {
-    Conversation::parkOnJob($convId, $job->id);
-    return ToolOutput::parked($job->id);
-}
+      code: `key = deterministic_key(turn_job_id, tool_use_uuid, op_index)
+job = find_job_by_key(user_id, key)
+if job is none:
+    job = db_transaction_create_unique_job(user_id, key, status="queued")
+
+// 若短等窗口内未完成，立刻停泊让出 Worker 并在终态通知唤醒
+if wait_briefly(job.id, seconds=5) == "still_running":
+    park_conversation_on_job(conv_id, job.id)
+    return tool_output_parked(job.id)
 
 // 对话级并发协调：队列消息与插队指令严格只在安全检查点领取
-function onSafePoint($convId) {
-    $pending = Queue::claimReadyInputsAndNotices($convId);
-    if ($pending) return Agent::injectAndContinue($convId, $pending);
-}
+def on_safe_point(conv_id):
+    pending = claim_ready_inputs_and_notices(conv_id)
+    if pending:
+        return inject_and_continue(conv_id, pending)
 
-function finishJob($jobId, $leaseToken, $result) {
-    DB::transaction(function () use ($jobId, $leaseToken, $result) {
-        // 租约 + 未取消双复核：已被停止的僵尸 Worker 写入失败
-        if (!Job::checkLeaseAndNotCancelled($jobId, $leaseToken)) return;
-        Job::markFinalWithRevision($jobId, $result);
-        Queue::enqueueNoticeAndWakeIfIdle($jobId);
-    });
-}`,
-      note: '留意两条分界：Worker 用短事务抢租约并停泊慢任务；写入事务内复核租约且未被取消；新消息和回执通知只在安全检查点出队，永远不插进 tool_use 与 tool_result 之间。',
+def finish_job(job_id, lease_token, result):
+    with db_transaction():
+        // 租约 + 未取消双复核：已被停止的僵尸 Worker 写不进去
+        if not verify_lease_and_not_cancelled(job_id, lease_token):
+            return
+        mark_job_final_with_revision(job_id, result)
+        enqueue_notice_and_wake_if_idle(job_id)`,
+      note: '留意两条分界：Worker 用短事务抢租约并停泊慢任务；写入事务内复核租约且未被取消；新消息和回执通知只在安全检查点出队，永远不插进 `tool_use` 与 `tool_result` 之间。',
     },
     exercise: {
       title: '动手练习：把慢接口改成可停泊可插队的异步任务',
@@ -379,17 +378,21 @@ function finishJob($jobId, $leaseToken, $result) {
       },
       {
         heading: '子 Agent 的三条生杀禁令，与多轮追派的按轮隔离',
-        paragraphs: [
-          '派给子 Agent 的环境必须上三把锁：① 从工具表里彻底拿掉「再次派发子 Agent」，在代码层禁止孙子级无限裂变；② 拿掉「停下来弹窗问用户」工具——用户主界面根本看不见隐藏子分支，子 Agent 一问人就会永远干等死锁，遇到信息不足只能如实回报缺口由主 Agent 决定；③ 执行等待遵循「短等即转后台」：主 Agent 同步等待几秒，快就内联直接收货；没做完则将这轮调用原子切换为后台托管（InlineWaiting -> Backgrounded），主 Agent 立刻脱身干别的或等待通知唤醒，绝不在对话里写 sleep 空转轮询。',
-          '如果要对同一个活跃子 Agent 连续追派多轮（send），绝对不能只在状态表里覆写单一顶层字段。每一轮追派都要按 run_id 独立建档跟踪投放与完成态，如果上一轮刚好挂在等待外呼工具上，排队的新一轮也必须乖乖等待，互不踩踏、绝不覆盖旧轮结论。',
-          '还要管好「父子并发与善后」：当父子对话需要互相更新状态时，必须约定统一的全局字典序加锁（比如永远先锁 ID 较小的会话、再锁较大的会话），防止父等子、子等父的交叉死锁；一旦用户在主窗口点击「删除对话」「停止」或「退回上一轮重新编辑」，系统必须级联终止并归档所有活着的下游子 Agent，绝不留下没人管的后台孤儿继续扣费。如果任务跑在沙盒环境里，所有模块都要读取同一份「当前生效沙盒策略（Effective Sandbox）」真值，避免一边认为在受限容器、一边直接放行宿主机操作。',
+        advanced: true,
+        advancedSummary: '剥夺子分支的嵌套与弹窗问人权、5 秒内联转后台、按 run_id 隔离子轮次、UUID 规范锁序与父退回级联清场。',
+        diagram: 'subagent-flow',
+        bullets: [
+          '**禁嵌套、禁弹窗问人**：子 Agent 工具表必须剥离「再次派发子 Agent」（代码级防孙子级失控裂变）与「停下弹窗问用户」（后台子分支用户看不见，一问就死锁；缺信息只准带缺口回报主会话）。',
+          '**5 秒短等转后台，不写 `sleep` 轮询**：派发后先同步短等几秒，快就内联收货；未完则把这轮调用原子升级成后台托管（`InlineWaiting -> Backgrounded`），完工发通知唤醒主对话。',
+          '**连续追派按 `run_id` 隔离轮次**：对同一个活跃子 Agent 连续追加 `send` 时，每轮独立按 `run_id` 建档跟踪投放与完成态；若前轮正等外呼工具，排队新轮须乖乖等待，绝不覆盖旧轮结论。',
+          '**规范加锁序 + 级联清场 + 统一沙盒真值**：父子互锁永远按 UUID 字典序从小到大加锁根治交叉死锁；主会话点「删除 / 停止 / 退回编辑」时级联叫停旗下活着的子会话；所有模块共读唯一「生效沙盒策略（Effective Sandbox）」。',
+          '**固定多步走确定性微工作流**：如果一批子任务流程完全固定（如批量扫描 20 个仓库），改用并发受控、带**步骤标签记忆化（Memoization）**的确定性工作流来调度，断电重跑跳过已完成标签。',
         ],
       },
       {
-        heading: '交接必须像接口返回值；固定多步改走确定性工作流',
+        heading: '交接必须像接口返回值',
         paragraphs: [
           '任务包至少包括问题、范围、工具、禁止动作、预算、输出格式和验收标准；返回包至少给结论、证据、边界、未完成项和下一步。它像服务接口：参数与返回不清，调用方只能猜。主 Agent 还要识别重复证据、处理冲突、检查成员是否完成，并把缺口诚实留在报告里；多数票不能替代来源。',
-          '此外，如果一群子任务每次走的分支都一模一样（例如批量扫描 20 个仓库），与其让主 Agent 每步靠嘴编排，不如交给并发受控、带「步骤标签记忆化（Memoization）」的确定性微工作流来调度多个子 Agent——断电重跑时跳过已完成标签、避免双倍花钱。',
         ],
       },
       {
@@ -465,38 +468,33 @@ function finishJob($jobId, $leaseToken, $result) {
     },
     code: {
       title: '最小伪代码：权限隔离、5 秒转后台与按 run_id 追踪',
-      code: `$tasks = Decomposer::splitReadOnlyWork($goal);
-foreach ($tasks as $task) {
-    // 剔除再次派发子 Agent 和停下弹窗问用户工具；读统一沙盒真值
-    $policy = Sandbox::effectivePolicyFor($user, $task->profile);
-    $tools = Tools::whitelistFor($task->profile, $policy)
-        ->without(['dispatch_agent', 'ask_user_question']);
-    $runId = Uuid::newV4();
-    $child = Subagent::dispatchRound($parentConvId, $runId, $tools, $task->budget());
+      code: `tasks = split_read_only_work(goal)
+for task in tasks:
+    // 剔除再派子 Agent 与弹窗问用户工具；读取全系统唯一生效沙盒真值
+    policy = effective_sandbox_policy(user, task.profile)
+    tools = whitelist_tools(task.profile, policy).without(["dispatch_agent", "ask_user_question"])
+    run_id = new_uuid()
+    child = dispatch_subagent_round(parent_conv_id, run_id, tools, task.budget)
 
-    // 先短等 5 秒；未完成则原子转后台并按 run_id 独立追踪，绝不空转 sleep 轮询
-    if ($child->waitBriefly(5) == 'still_running') {
-        Subagent::promoteRoundToBackground($child->id, $runId);
-        $handles[] = $runId;
-    } else {
-        $reports[$runId] = Subagent::readRoundReport($child->id, $runId);
-    }
-}
+    // 先短等 5 秒；未完成则原子转后台并按 run_id 独立追踪，绝不 sleep 轮询
+    if wait_briefly(child.id, seconds=5) == "still_running":
+        promote_round_to_background(child.id, run_id)
+        background_handles.append(run_id)
+    else:
+        reports[run_id] = read_round_report(child.id, run_id)
 
 // 父子互锁按 UUID 字典序；主会话退回或停止时级联清理活着的子会话
-function onParentRewindOrCancel($parentConvId, $childIds) {
-    $ordered = Locks::acquireCanonicalOrder([$parentConvId, ...$childIds]);
-    Subagent::cascadeCancelAndArchive($childIds);
-}
+def on_parent_rewind_or_cancel(parent_conv_id, child_ids):
+    acquire_locks_in_uuid_order([parent_conv_id, *child_ids])
+    cascade_cancel_and_archive(child_ids)
 
-$proposal = Integrator::mergeByRunId($reports);
-$evidence = Verifier::checkResultAndTrace($proposal, $reports);
-if ($proposal->hasHighImpactAction()) {
-    Authorizer::check($user, $proposal);
-    return Approval::request($proposal, $evidence);
-}
-return FinalAnswer::from($proposal, $evidence);`,
-      note: '留意四条工程细节：子分支禁止嵌套与问人、超时 5 秒即原子升级后台、多次追派按 run_id 独立建档、父子同步加锁按规范顺序且退出时级联清场。',
+proposal = merge_reports_by_run_id(reports)
+evidence = verify_result_and_trace(proposal, reports)
+if proposal.has_high_impact_action:
+    authorize(user, proposal)
+    return request_human_approval(proposal, evidence)
+return final_answer(proposal, evidence)`,
+      note: '留意四条工程细节：子分支禁止嵌套与问人、超时 5 秒即原子升级后台、多次追派按 `run_id` 独立建档、父子同步加锁按规范顺序且退出时级联清场。',
     },
     exercise: {
       title: '动手练习：用一张表与状态图决定是否组队',

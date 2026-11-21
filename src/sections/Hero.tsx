@@ -14,7 +14,7 @@ export default function Hero() {
       {/* top bar */}
       <div className="max-w-6xl mx-auto px-6 pt-6 flex items-center justify-between text-sm">
         <span className="chapter-stamp font-semibold">LEARNING AGENT BASE</span>
-        <span className="chapter-stamp opacity-60">图解入门 · 2026-09</span>
+        <span className="chapter-stamp opacity-60">图解入门 · 2026-11</span>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 pt-16 pb-10 text-center relative">
@@ -36,8 +36,8 @@ export default function Hero() {
           </span>
         </h1>
         <p className="mt-8 text-lg md:text-xl opacity-80 max-w-2xl mx-auto leading-relaxed">
-          会聊天不等于会办事。这里有 10 篇图解教程，从一次工具调用讲到多 Agent 协作。
-          每章用故事开场，配小测验、Bug 复盘和动手练习，读完就能上手，不需要编程基础。
+          会聊天不等于会办事。这里有 10 篇图解教程，从一次工具调用讲到多 Agent 协作：
+          <strong>主线用故事和图示讲透直觉，折叠深潜区拆解真实上线护栏</strong>，新手能顺畅读完，工程师也能直接拿去兜底。
         </p>
 
         <div className="mt-10 flex items-center justify-center gap-4 flex-wrap">

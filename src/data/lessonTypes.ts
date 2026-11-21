@@ -10,8 +10,23 @@ export interface Quiz {
   explanation: string;
 }
 
+export type DiagramId =
+  | 'context'
+  | 'tsm'
+  | 'memory'
+  | 'async'
+  | 'loop-guard'
+  | 'compact-tiers'
+  | 'subagent-flow';
+
 export interface Section {
   heading?: string;
+  /** 标记为进阶生产深潜，默认以可折叠卡片呈现，保持入门主线清爽 */
+  advanced?: boolean;
+  /** 折叠态的一句话预览说明 */
+  advancedSummary?: string;
+  /** 在该小节内嵌入的手绘风速查图 */
+  diagram?: DiagramId;
   paragraphs?: string[];
   bullets?: string[];
   code?: string;

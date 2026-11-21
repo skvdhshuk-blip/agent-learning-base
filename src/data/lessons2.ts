@@ -24,13 +24,27 @@ export const lessons2: Lesson[] = [
     core: [
       {
         heading: '可信联网有五个台阶',
-        paragraphs: [
-          '第一阶：把问题改成可检索条件。「今天天气怎样」缺少地点、日期和时区。Agent 可以从用户话语与安全的环境信息中补齐，也可以追问。但不能把「自动补全」变成悄悄猜测——最终查询里应留下明确的城市、日期和时区，方便日志与复查。',
-          '第二阶：搜索只负责召回候选。搜索结果通常给出标题、URL 和摘要。它适合快速铺开候选来源，不适合独自承担所有结论。摘要可能截断、改写、混入旧缓存，也可能缺少限定词。',
-          '第三阶：打开原文并按目标抽取片段。面对长网页时，可以用目标关键词定位最相关的正文区（避免粗暴截断前几千字丢掉关键数据），而对 JSON、纯文本类响应则绕过网页正文清洗直接原样读取。抓取端还要在服务端完成 SSRF 防护（URL 校验、协议限制、DNS 与重定向检查），不靠模型自觉。万一网页因为动态渲染或反爬打不开而只能退回搜索摘要，返回值必须显式打上 [snippet]（降级摘要）标签，绝不能伪装成「已读全文」。',
-          '第四阶：对齐实体、时间与口径。至少检查：是不是同一个城市或对象；是不是用户问的日期；发布时间（published_at）、作者来源与事件发生时间是否混淆；单位与统计口径是否一致。新闻尤其容易把「文章今天发布」和「事件今天发生」混为一谈。',
-          '第五阶：只让证据支撑它能支撑的结论，并按模态验证。如果原文只说「可能有雨」，答案就不该写「确定暴雨」；如果生成或抓回了一张页面卡片或静态缩略图，它只证明记录存在，不能用来宣称「页面排版完美」或「音视频播放流畅」。缺哪一类证据，就诚实报告未验证哪一类。',
+        bullets: [
+          '**第一阶 · 把问题改成可检索条件**：补齐城市、日期与时区，把明确查询条件写进日志，不偷偷猜。',
+          '**第二阶 · 搜索只负责召回候选**：搜索结果提供标题、URL 和摘要，适合铺开候选，不适合独自承担结论。',
+          '**第三阶 · 打开原文并抽取相关段**：只给模型看与问题直接相关的精华原文，并在服务端做好 **SSRF 防护**（协议、DNS、重定向校验）。',
+          '**第四阶 · 对齐实体、时间与口径**：核对是否同一城市、同一日期、同一单位，区分「文章发布时间」与「事件发生时间」。',
+          '**第五阶 · 结论强度不超过证据强度**：原文说「可能有雨」，答案绝不写成「确定暴雨」；来源冲突时直接呈现分歧。',
         ],
+      },
+      {
+        heading: '抓取降级、非 HTML 直通与跨模态验真',
+        advanced: true,
+        advancedSummary: '长网页如何按关键词抽段、打不开网页回退摘要时为何必须标 [snippet]，以及静态卡片不能替代播放验真。',
+        bullets: [
+          '**按关键词偏置抽段 + 非 HTML 直通**：长网页别粗暴截前几千字，按目标关键词定位核心正文区；对 JSON、纯文本响应直接跳过 HTML 正文清洗原样读取，完整原文留给界面与审计日志。',
+          '**诚实回退 `[snippet]`**：网页因动态渲染或反爬打不开、不得不退回搜索摘要时，必须显式打上 `[snippet]` 标签，绝不伪装成「已读全文」。',
+          '**证据必须匹配结论模态**：元数据卡片或静态缩略图只证明记录存在，不能用来宣称「页面排版无误」或「音视频播放流畅」；缺哪一类证据就诚实标出未验证。',
+        ],
+        callout: {
+          title: '验真的最小单位与诚实回退',
+          text: '不是「答案末尾有几个链接」，而是「每个关键事实能否指向真正支撑它的原文或对应模态证据」。抓取失败退回摘要时，务必打上 `[snippet]` 标牌。',
+        },
       },
       {
         heading: '搜索链路每一步的产物',
@@ -228,25 +242,35 @@ description: 当用户要根据本周已完成事项、阻塞和下周计划生�
             ['Agent', '此刻下一步选什么', '先鉴权，再调用订单工具'],
           ],
         },
+        diagram: 'tsm',
         callout: {
           title: '记住这句话',
-          text: 'Skill 主要是可按需阅读的做事说明，MCP 主要是可协商能力的连接协议，Tool 是真正执行动作的入口。连接成功不是授权成功。',
+          text: '**Skill** 是可按需阅读的做事说明，**MCP** 是可协商能力的连接协议，**Tool** 是真正执行动作的入口。**连接成功不等于授权成功。**',
         },
       },
       {
-        heading: '渐进式披露：不是「藏起来」，而是「用时再拿」与「过期重载」',
+        heading: '渐进式披露：不是「藏起来」，而是「用时再拿」',
         paragraphs: [
-          '工具或 Skill 很多时，先给精炼名称与描述；相关时再加载详情，减少无关内容。对 SKILL.md 来说，标准路径是三层披露：开局仅放极紧凑的目录清单（给清单设小比例预算，如上下文窗口的 1%，单条限长；超出预算的技能也保留只有名字的紧凑占位符，让模型知道存在而不塞爆描述）；激活后加载 SKILL.md 路由表与公共规则；具体子任务所需的详情页、脚本与模板按需再读。',
-          '外接 MCP 工具同理：如果几十个 MCP 服务在开局同步连完再把几百个 Schema 塞进首轮请求，既慢又贵。更稳的做法是后台异步预热连接，首轮只列延迟工具名清单，模型确实要用时再调 ToolSearch（精确名或 +关键词）把目标 Schema 拉进后续轮次；若查询参数为空，返回引导提示而非硬报错，免得模型反复重试。',
-          '还要警惕两个真实运行时细节：第一，别把「读几行名字、重命名」这类轻操作也卡死在必须先读大手册上，重门禁（Missing / Stale / Ready 检查）应只拦创建、修改等高复杂度写操作；第二，如果长对话刚刚压缩过历史，或者后台刚切过配置/模型清单，以前加载过的 Skill 正文可能已经被压缩丢掉或内容过时（Stale）——千万别只靠一个「曾经加载过 = true」的旧标记放行，服务端要核对它在当前有效上下文窗口里依然新鲜，过期就要求重读。',
-          '面向人类用户的「/ 命令菜单」也别和系统内部技能混作一锅：系统底层自用的工作流 Skill（比如图编辑、节点规范）留给模型自动调度，用户的 / 菜单只暴露本地安装且启用的技能与插件，并用稳定的目录 key（而不是可随意改写的展示名）来做本地覆盖与结构化标签绑定。',
+          '工具或 Skill 很多时，先给精炼名称与描述；相关时再加载详情，减少无关内容。对 `SKILL.md` 来说，标准路径是三段式加载：**启动时只加载目录元数据 → 激活时加载正文路由与规则 → 脚本和模板按子任务按需读取**。',
+          '「不能超过十个」应理解为经验警报而非硬上限：准备真实任务和不该触发的反例做评测，发现两个 Skill 总打架时，先修名称与职责边界。',
+        ],
+      },
+      {
+        heading: '运行时深潜：目录预算、压缩失忆重载与 ToolSearch',
+        advanced: true,
+        advancedSummary: '如何防 Skill 目录撑爆前缀、压缩后 Stale 强制重读、分叉代码防递归，以及 MCP 后台预热与 / 菜单隔离。',
+        bullets: [
+          '**目录预算 + 占位保底**：给启动目录设小比例预算（如窗口的 1%、单条限长），超出预算的技能保留紧凑名签占位，让模型知道存在又不塞爆前缀。',
+          '**MCP 后台预热 + 延迟发现（`ToolSearch`）**：外部 MCP 服务在后台异步建连，首轮只列延迟工具名，需要时调 `ToolSearch`（精确名或 `+关键词`）拉取定义；空查询返回引导提示而非硬报错。',
+          '**`Missing / Stale / Ready` 三态门禁**：轻读取直用工具摘要；复杂创建/修改前检查手册是否在当前有效窗口内依然新鲜——长对话压缩洗掉正文或切换底层配置后变为 `Stale`，必须强制重读，不能拿旧布尔值放行。',
+          '**用户 `/` 菜单与内部技能分离**：底层工作流 Skill 留给模型自动调度，人类可见的 `/` 菜单只展示本地安装启用的技能与插件，并按不可变目录 `key`（而非展示名）覆盖绑定。',
         ],
         table: {
           head: ['执行形态', '怎么做', '适用场景与防坑要点'],
           rows: [
-            ['轻量直呼 + 按需拉取', '常用轻操作直用摘要；MCP 工具先列名、用 ToolSearch 拉定义', '既省首轮前缀，又避免空查询引发重试死循环'],
-            ['内联注入（Inline）', 'tool_result 只回极短确认，再把完整手册作为独立命令轮次注入当前对话', '需要主会话延续同一上下文继续干活；不把整本手册塞进小小 tool_result'],
-            ['分叉隔离（Forked）', '带着白名单工具切到隔离小分叉里跑完，只回结果给主对话', '流程重、易污染主历史；必须在代码层拦死递归重入，别指望用「不要再调用自己」的文字劝住模型'],
+            ['**轻量直呼 + 按需拉取**', '常用轻操作直用摘要；MCP 先列名再用 `ToolSearch` 拉定义', '既省首轮前缀，又避免空查询引发重试死循环'],
+            ['**内联注入（Inline）**', '`tool_result` 只回极短确认，完整手册作为独立命令轮次注入当前对话', '需要主会话延续同一上下文继续干活；不把整本手册塞进小小 `tool_result`'],
+            ['**分叉隔离（Forked）**', '带着白名单工具切到隔离小分叉里跑完，只回结果给主对话', '流程重、易污染主历史；必须靠代码调用栈拦死递归，别靠「不要再调用自己」的否定句'],
           ],
         },
       },
@@ -368,22 +392,21 @@ if action.is_heavy_mutation and skill_state(candidate.key) != "Ready":
     core: [
       {
         heading: '一句话分界',
-        paragraphs: ['状态属于这次任务，记忆属于某个主体，知识属于可引用的资料集合。'],
+        diagram: 'memory',
+        paragraphs: ['**状态**属于这次任务，**记忆**属于某个主体，**知识**属于可引用的资料集合。'],
       },
       {
         heading: '会话状态是一张正在填写的表单',
         paragraphs: [
           '会话状态通常短命。订单号、已经完成的步骤、等待用户补充的字段、某个工具刚返回的结果，都属于它。任务结束后大部分状态可以过期；中途恢复时，它又必须足够精确。',
-          '不要只把状态埋在聊天文字里。聊天里一句「订单已经查到」，机器很难知道这是事实、计划还是猜测。可以同时维护结构化状态，例如 order_id、refund_step、last_tool_result_id——页面文案可以变化，真正驱动流程的是明确字段。长对话还会维护一份仅属于本次会话的后台「工作笔记」（Session Memory），供超长时快速摘要恢复，绝不外泄成跨会话偏好。',
-          '如果 Agent 还要修改用户正在编辑的文档或作品节点，必须把三种状态彻底分清：元数据修订号（revision，用来做乐观并发检查，防两人同时改丢）、已交付的内容版本号（versionId，刚跑出的候选结果先待在候选槽，确认采纳后才上位），以及桌面端未保存草稿标记（unsavedEdits）——检测到用户手里正有未保存编辑时，Agent 必须停下来请用户决定保存、丢弃还是合并，绝不能悄无声息覆盖。',
+          '不要只把状态埋在聊天文字里，应同时维护结构化字段（如 `order_id`、`refund_step`、`last_tool_result_id`）。长对话还会维护一份仅属于本次会话的后台「工作笔记」（`Session Memory`），供超长时快速摘要恢复，绝不外泄成跨会话偏好。',
         ],
       },
       {
-        heading: '长期记忆要先问有没有必要记，并发写入要上锁',
+        heading: '长期记忆要先问有没有必要记',
         paragraphs: [
-          '长期记忆不是对话录像。它是经过筛选、允许跨会话复用的信息，例如语言偏好、稳定的工作习惯、用户明确要求保存的背景。真实记忆库常分成一份稳定的总览索引（如长期事实卡片）和按日期、主题拆开的事件日志；提取动作可以在后台交给更便宜的小模型完成。',
-          '但它必须带来源、创建时间、最近确认时间、可见范围和删除入口，更要守住两条工程纪律：第一，多个分支同时写同一份记忆库时，必须按记忆库 ID 加串行写锁、先读后并（Read-before-Edit），避免并发直接覆盖掉旧事实；第二，开局自动注入进提示词的记忆索引尽量在会话起点冻结，保住前缀缓存。把未经确认的推测写成记忆尤其危险——应明确区分用户原话、工具事实与模型推断，让低置信推断容易过期。',
-          '一条合格的长期记忆记录，字段大致是这样：',
+          '长期记忆不是对话录像，而是经过筛选、允许跨会话复用的信息（如语言偏好、稳定习惯、用户明确要求保存的背景）。它必须带**来源、创建时间、最近确认时间、可见范围和删除入口**。',
+          '把未经确认的推测写成记忆尤其危险——应区分用户原话、工具事实与模型推断，让低置信推断容易过期。一条合格的长期记忆记录，字段大致是这样：',
         ],
         code: `{
   "id": "mem_381",
@@ -402,10 +425,8 @@ if action.is_heavy_mutation and skill_state(candidate.key) != "Ready":
       {
         heading: '知识库重在版本与来源，对外问答必须只读',
         paragraphs: [
-          '知识库常放产品手册、制度、代码文档、合同模板或经过批准的 FAQ。经典 RAG（检索增强生成）先从外部集合检索相关片段，再把片段交给生成模型——它没有承诺上传一个 PDF 就会自动得到真相。如果知识库由 AI 负责索引整理，每次入库维护建议包裹成可回滚的独立版本提交，但对外提供问答时务必切成严格只读，绝不允许单次聊天的猜测反手改写权威知识库。',
-          '面向较大文档库的典型链路包括解析、切分、索引、召回和上下文注入；还可以加入查询改写、关键词与语义混合检索、重排和引用。表格被错误拆行、检索词与原文用词不同、旧版本排在新版本前面，都会让最后的回答看起来流畅却依据错误。',
-          '多模态会话里历史图片同样需要边界管理：工作区传过的图片可为保住前缀缓存保留在历史中，但必须设定总量上限（例如最多随附 100 张）；超出上限的历史图片或切换到纯文本模型时，应降级成「附带稳定附件 ID 的文字占位」，好让下游工具依然拿 ID 准确引用，而不至于撑爆窗口。',
-          '知识片段至少应带 document_id、版本、生效时间、页码或段落位置、访问级别。回答使用了哪一片，应能追到原文。「根据公司规定」还不够：哪份规定、哪个版本、哪一段？一个知识片段的元数据可以这样存：',
+          '知识库常放产品手册、制度、代码文档或经过批准的 FAQ。经典 RAG 先从外部集合检索相关片段，再交给生成模型——它没有承诺上传一个 PDF 就会自动得到真相。',
+          '知识片段至少应带 `document_id`、版本、生效时间、段落位置与访问级别，让回答能一路追回原文：',
         ],
         code: `{
   "chunk_id": "refund-policy:v3:§4.2",
@@ -418,15 +439,26 @@ if action.is_heavy_mutation and skill_state(candidate.key) != "Ready":
         table: {
           head: ['类别', '典型内容', '生命周期', '写入与并发要求', '回答时重点'],
           rows: [
-            ['会话状态与工作笔记', '当前订单、revision/versionId/草稿标记、本轮摘要', '一次任务', '工具结果或检查点、禁覆盖本地草稿', '精确恢复进度'],
-            ['长期记忆', '语言偏好、稳定习惯、日期事件卡', '跨会话，可撤回', '用户授权、来源、按库加锁先读后并', '个性化且不越界'],
-            ['知识库', '手册、制度、代码文档', '随版本演进', '版本封装发布、对外检索严格只读', '版本、引用与证据'],
+            ['**会话状态与笔记**', '当前订单、`revision` / `versionId` / 草稿标记、本轮摘要', '一次任务', '工具结果或检查点、禁覆盖本地草稿', '精确恢复进度'],
+            ['**长期记忆**', '语言偏好、稳定习惯、日期事件卡', '跨会话，可撤回', '用户授权、来源、按库加锁先读后并', '个性化且不越界'],
+            ['**知识库**', '手册、制度、代码文档', '随版本演进', '版本封装发布、对外检索严格只读', '版本、引用与证据'],
           ],
         },
         callout: {
           title: '记忆不是免验证通行证',
-          text: '记住某件事只表示系统曾保存它，不表示它现在仍正确；影响付款、身份或用户未保存草稿的动作，写入前必须再次核对 revision、草稿标志并确认。',
+          text: '记住某件事只表示系统曾保存它，不表示它现在仍正确；影响付款、身份或用户未保存草稿的动作，写入前必须再次核对与确认。',
         },
+      },
+      {
+        heading: '并发锁、三种版本字段与多模态图片上限',
+        advanced: true,
+        advancedSummary: '拆解 revision / versionId / unsavedEdits 防覆盖边界、长期记忆库串行写锁、只读知识库与图片降级占位。',
+        bullets: [
+          '**分清三个版本状态**：`revision` 管并发乐观锁（防两人同时改丢）；`versionId` 指向已采纳交付版（刚跑出的候选结果先待在候选槽）；`unsavedEdits` 标志用户本地还有未保存草稿——检测到草稿时必须停下来请用户决定保存、丢弃或合并，绝不静默覆盖。',
+          '**长期记忆库写锁 + 前缀冻结**：多分支同时写同一记忆库必须按库 ID 加串行写锁并「先读后并（Read-before-Edit）」；开局注入的记忆索引尽量冻结以保前缀缓存，后台提取可交给便宜小模型。',
+          '**知识库读写隔离**：AI 维护索引时用独立版本提交封装以便回滚，但**对外问答链路一律只读**，绝不让单次聊天的猜测反手污染权威知识库。',
+          '**多模态图片上限**：历史图片可随附上下文保缓存，但须设硬上限（如 100 张）；超出上限或切纯文本模型时，降级为「附带稳定附件 ID 的文字占位」，下游工具仍可精准引用。',
+        ],
       },
     ],
     analogy: {
@@ -454,28 +486,23 @@ if action.is_heavy_mutation and skill_state(candidate.key) != "Ready":
     },
     code: {
       title: '最小伪代码：按权限、版本与锁读取三层记忆',
-      code: `$state = TaskState::load($taskId);
-// 检测目标条目是否有用户未保存草稿、并用 revision 做并发校验
-if ($state->targetHasUnsavedEdits()) {
-    return AskUser::resolveDraftConflict($state->targetId);
-}
-$memories = Memory::searchWithFrozenIndex($userId, $query)
-    ->whereAllowed($consent)
-    ->whereNotExpired()
-    ->limit(3);
-$knowledge = Knowledge::openReadOnly()
-    ->search($query)
-    ->whereRole($currentRole)
-    ->whereEffectiveAt(now())
-    ->rerank()
-    ->limit(5);
-$context = Context::composeWithPictureCeiling($state, $memories, $knowledge, 100);
-$answer = Model::respond($userMessage, $context);
-// 若需沉淀新长期记忆，异步加库级写锁并先读后并
-$queued = MemoryWriter::enqueueWithLock($userId, $answer->extractedFacts);
-$audited = Audit::saveUsedSources($answer->sourceIds);
-return $answer->withCitations();`,
-      note: '十八行明确了六道防线：未保存草稿先问人、长期记忆开局索引冻结且写入加库锁、知识库对外只读、历史图片控上限降级占位，最后记录真正使用过的来源。',
+      code: `state = load_task_state(task_id)
+// 先检查目标条目是否有用户未保存草稿，并用 revision 做并发校验
+if state.target_has_unsaved_edits():
+    return ask_user_resolve_draft(state.target_id)
+
+memories = search_memory_with_frozen_index(user_id, query, consent=true, limit=3)
+knowledge = open_knowledge_read_only().search(
+    query, role=current_role, effective_at=now(), rerank=true, limit=5
+)
+context = compose_context_with_picture_ceiling(state, memories, knowledge, max_images=100)
+answer = model_respond(user_message, context)
+
+// 如需沉淀长期记忆，异步按库加写锁并先读后并
+enqueue_memory_write_with_lock(user_id, answer.extracted_facts)
+save_audit_sources(answer.source_ids)
+return answer.with_citations()`,
+      note: '十六行明确了六道防线：未保存草稿先问人、长期记忆开局索引冻结且写入加库锁、知识库对外只读、历史图片控上限降级占位，最后记录真正使用过的来源。',
     },
     exercise: {
       title: '动手练习：给资料贴三色标签',
@@ -582,33 +609,38 @@ budget: 最多 10 轮，15 分钟`,
       {
         heading: '自评可以当信号，不能当唯一裁判；修改后要回读自证',
         paragraphs: [
-          '可以请模型检查遗漏、比较结果与标准、解释失败原因。这类自评有价值，但应与确定性检查配合：代码任务看测试退出码，网页任务看真实浏览器状态，数据任务看查询结果与约束，写入类任务做完后必须回读一次实际版本（并核对输入依赖标识 sourceVersionId 有没有给错版本），高影响动作看人工审批。',
-          '尤其要分清三道门槛：「已受理」只表示任务排进了队列；「任务跑完（succeeded）」只代表生成了候选产物待挑选，还不代表品质合格或已经被正式采纳；唯有通过回读确认并跨过验收条件，才算「已交付」。要是收费任务半路失败，错误信息里也必须保留已落库的资源 ID 与 job_id，方便继续排查而不是蒙眼从头烧钱重来。',
-          '「模型觉得答案不错」只能算参考意见；只要结果涉及真实路由、数据写入或权限边界，就得由测试、数据库约束与回读比对这类确定性手段来验收。两者不能互相代替。',
+          '可以请模型检查遗漏、比较结果与标准、解释失败原因。但「模型觉得答案不错」只能算参考意见——只要涉及真实路由、数据写入或权限边界，就必须用**测试退出码、数据库约束、真实浏览器与写入后回读**这类确定性手段验收。',
         ],
-        callout: {
-          title: '别拿「progress = 0」误判任务卡死',
-          text: '耗时生成任务在调用上游模型期间，进度百分比常长时间停在 0%。看到 0% 就盲目重试最容易花双份钱。验收与巡检应查看结构化脉搏（pulse）：当前阶段（stage）、静默秒数（quietSec）、活跃外部请求数和最近异常恢复记录，再判断是正常等待还是真的卡死。',
-        },
       },
       {
         heading: '停止条件也是设计的一部分，汇报必须分清四态',
         paragraphs: [
-          '最小停止条件通常包含四类：成功、需要用户、预算耗尽和不可恢复错误。向用户交代收尾情况时，要把结果严格归进「已交付并验真」「仍在运行」「已失败（附 ID 与诊断）」「未验证（缺哪项证据）」四类——人类看不见的后台子 Agent 不许停在原地弹窗问人，能独立跑通就独立汇报，缺人决断再由主会话发起结构化提问。',
+          '最小停止条件包含四类：成功、等待用户、预算耗尽和不可恢复错误。向用户汇报时，严格区分「已交付并验真 / 仍在运行 / 已失败 / 未验证」四态。',
         ],
         table: {
           head: ['出口', '可观察信号', '应做动作'],
           rows: [
-            ['已交付并验真', '回读匹配且验收条件全部有证据', '返回结果、versionId 与证据'],
-            ['等待用户（主会话）', '缺少关键选择或授权（非后台子分支）', '提出明确选择题，冻结当前草稿'],
-            ['仍在运行 / 预算耗尽', '脉搏活跃，或达到轮次/时间上限', '保住已受理 ID 与进度，说明待续或未验项'],
-            ['已失败（含诊断）', '权限缺失、依赖报错、数据矛盾', '保留相关节点/job_id 与原因，停止盲目重试'],
+            ['**已交付并验真**', '回读匹配且验收条件全部有证据', '返回结果、`versionId` 与证据'],
+            ['**等待用户（主会话）**', '缺少关键选择或授权（非后台子分支）', '提出明确选择题，冻结当前草稿'],
+            ['**仍在运行 / 预算耗尽**', '脉搏活跃，或达到轮次/时间上限', '保住已受理 ID 与进度，说明待续或未验项'],
+            ['**已失败（含诊断）**', '权限缺失、依赖报错、数据矛盾', '保留相关节点 / `job_id` 与原因，停止盲目重试'],
           ],
         },
         callout: {
           title: '诚实区分「未验证」和「已完成」',
-          text: '不能把「模型没有再调工具」或「任务返回了 succeeded」误认为一切验收通过。缺少真机/播放/回归证据时，明确标出「未验证」。',
+          text: '不能把「模型没有再调工具」或「任务返回了 `succeeded`」误认为一切验收通过。缺少真机、播放或回归证据时，明确标出「未验证」。',
         },
+      },
+      {
+        heading: '三道交付门槛、`pulse` 脉搏判活与失败保 ID',
+        advanced: true,
+        advancedSummary: '为什么「已受理 ≠ 候选完成 ≠ 已交付」、见 progress=0 别盲目重试收费任务，以及子分支禁止阻塞问人。',
+        bullets: [
+          '**分清三道门槛**：「已受理」只代表排进队列；「任务跑完（`succeeded`）」只代表产出进入候选槽；唯有**回读确认**（核对 `sourceVersionId` 未错配）且跨过验收条件，才算「已交付」。',
+          '**失败保留已创 ID**：收费或写入任务中途失败时，错误回报里必须保留已创建的资源 ID 与 `job_id`，避免下一步蒙眼从头重来花双份钱。',
+          '**用 `pulse` 脉搏替代 `progress = 0` 判活**：耗时生成在调用上游模型期间进度常停在 `0%`，应检查阶段（`stage`）、静默秒数（`quietSec`）、活跃下游请求数与恢复记录，不要见 `0%` 就自动重投。',
+          '**主会话提问，子分支禁阻塞**：用户看不见的后台子 Agent 不许弹窗停下等人，缺信息就诚实带缺口回报主会话。',
+        ],
       },
     ],
     analogy: {
@@ -634,33 +666,29 @@ budget: 最多 10 轮，15 分钟`,
     },
     code: {
       title: '最小伪代码：受理后验脉搏、回读再验收',
-      code: `$plan = Planner::make($goal, $acceptance);
-for ($turn = 1; $turn <= $maxTurns; $turn++) {
-    $step = $plan->nextUnverifiedStep();
-    $proposal = Executor::propose($step);
-    if ($proposal->needsApproval() && $context->isMainUserFacingTurn()) {
-        return FinalAnswer::waiting($proposal->question());
-    }
-    if (!$proposal->isAllowed()) {
-        return FinalAnswer::failed('动作超出权限');
-    }
-    $admission = Executor::run($proposal); // 返回资源 ID 与 job_id
-    if ($admission->isPending() && $admission->pulse()->isAlive()) {
-        return FinalAnswer::running($admission->jobId, $admission->pulse());
-    }
-    // 写入或候选完成后再回读一次实态，防止假成功或 sourceVersionId 错配
-    $actual = Verifier::readBackAndCompare($step, $admission->resourceId);
-    $plan->record($step, $actual);
-    if (Verifier::allPassed($acceptance, $plan)) {
-        return FinalAnswer::delivered($plan->evidence());
-    }
-    if ($admission->isFailed()) {
-        // 保留已创建的资源 ID 与 job_id，禁止丢弃上下文或自动双花重试
-        return FinalAnswer::failedWithIds($admission->resourceId, $admission->jobId, $admission->reason());
-    }
-}
-return FinalAnswer::budgetReached($plan->unverifiedSummary());`,
-      note: '注意三个关键动作：仅主对话能阻断问用户（子分支不能）；看到任务还在跑时查 pulse 保活而非重提交；失败时保住已创建 ID、成功后回读验证才宣布 delivered。',
+      code: `plan = make_plan(goal, acceptance)
+for turn in 1..MAX_TURNS:
+    step = plan.next_unverified_step()
+    proposal = propose_action(step)
+    if proposal.needs_approval and context.is_main_user_turn:
+        return answer_waiting_user(proposal.question)
+    if not proposal.is_allowed:
+        return answer_failed("动作超出权限")
+
+    admission = execute(proposal)  // 返回已创 resource_id 与 job_id
+    if admission.is_pending and admission.pulse.is_alive():
+        return answer_running(admission.job_id, admission.pulse)
+
+    // 写入或候选完成后再回读一次实态，防假成功或 sourceVersionId 错配
+    actual = read_back_and_verify(step, admission.resource_id)
+    plan.record(step, actual)
+    if all_acceptance_passed(acceptance, plan):
+        return answer_delivered(plan.evidence)
+    if admission.is_failed:
+        // 保留已创建的 resource_id 与 job_id，禁止丢弃上下文或自动双花重试
+        return answer_failed_with_ids(admission.resource_id, admission.job_id, admission.reason)
+return answer_budget_reached(plan.unverified_summary())`,
+      note: '注意三个关键动作：仅主对话能阻断问用户（子分支不能）；看到任务还在跑时查 `pulse` 保活而非重提交；失败时保住已创建 ID、成功后回读验证才宣布 `delivered`。',
     },
     exercise: {
       title: '动手练习：把一句需求变成五张验收票',

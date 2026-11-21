@@ -1,6 +1,13 @@
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
+import { Copy, Check } from 'lucide-react';
 
 type Lang = 'json' | 'yaml' | 'pseudo';
+
+const LANG_LABEL: Record<Lang, string> = {
+  json: 'JSON',
+  yaml: 'YAML',
+  pseudo: '伪代码',
+};
 
 function detectLang(code: string): Lang {
   const t = code.trimStart();
@@ -36,7 +43,6 @@ function tokenizeYaml(code: string): Tok[] {
   const out: Tok[] = [];
   code.split('\n').forEach((line, li) => {
     if (li > 0) out.push({ text: '\n' });
-    // split off trailing comment (keep original spacing before it)
     let body = line;
     let tail = '';
     const m0 = line.match(/\s+#.*$|^#.*$/);
@@ -52,7 +58,6 @@ function tokenizeYaml(code: string): Tok[] {
       out.push({ text: keyM[3] });
       rest = body.slice(keyM[0].length);
     }
-    // numbers inside the remaining part
     let last = 0;
     for (const m of rest.matchAll(/\d+(?:\.\d+)?/g)) {
       const i = m.index!;
@@ -67,7 +72,7 @@ function tokenizeYaml(code: string): Tok[] {
 }
 
 const PSEUDO_RE =
-  /(\/\/[^\n]*)|('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")|(\$[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)|\b(for|foreach|if|elif|else|return|function|fn|while|in|as|use|and|or|not|is|none|None|null|true|false|new|continue|break)\b|([A-Za-z_]\w*)(?=\s*(?:\(|::))/g;
+  /(\/\/[^\n]*)|('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")|(\$[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)|\b(for|foreach|if|elif|else|return|function|fn|def|while|in|as|use|and|or|not|is|none|None|null|true|false|new|continue|break|assert)\b|([A-Za-z_]\w*)(?=\s*(?:\(|::))/g;
 
 function tokenizePseudo(code: string): Tok[] {
   const out: Tok[] = [];
@@ -88,26 +93,75 @@ function tokenizePseudo(code: string): Tok[] {
 }
 
 export default function CodeBlock({ code, className = '' }: { code: string; className?: string }) {
-  const nodes = useMemo<ReactNode[]>(() => {
-    const lang = detectLang(code);
+  const [copied, setCopied] = useState(false);
+
+  const { lang, nodes } = useMemo<{ lang: Lang; nodes: ReactNode[] }>(() => {
+    const detected = detectLang(code);
     const toks =
-      lang === 'json' ? tokenizeJson(code) : lang === 'yaml' ? tokenizeYaml(code) : tokenizePseudo(code);
-    return toks.map((t, i) =>
-      t.cls ? (
-        <span key={i} className={t.cls}>
-          {t.text}
-        </span>
-      ) : (
-        <span key={i}>{t.text}</span>
+      detected === 'json'
+        ? tokenizeJson(code)
+        : detected === 'yaml'
+          ? tokenizeYaml(code)
+          : tokenizePseudo(code);
+    return {
+      lang: detected,
+      nodes: toks.map((t, i) =>
+        t.cls ? (
+          <span key={i} className={t.cls}>
+            {t.text}
+          </span>
+        ) : (
+          <span key={i}>{t.text}</span>
+        ),
       ),
-    );
+    };
   }, [code]);
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // 忽略受限环境下的剪贴板错误
+    }
+  };
+
   return (
-    <pre
-      className={`code-block rounded-xl p-4 md:p-5 font-mono-code text-xs md:text-sm overflow-x-auto leading-relaxed ${className}`}
-    >
-      {nodes}
-    </pre>
+    <div className="code-block rounded-xl overflow-hidden">
+      <div
+        className="flex items-center justify-between px-4 py-2 text-[11px] font-mono-code border-b"
+        style={{
+          borderColor: 'rgba(246,242,229,0.12)',
+          background: 'rgba(255,255,255,0.04)',
+          color: 'rgba(246,242,229,0.72)',
+        }}
+      >
+        <span className="chapter-stamp tracking-wider">{LANG_LABEL[lang]}</span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded transition-colors hover:bg-white/10"
+          aria-label="复制代码"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5" style={{ color: 'var(--c-yellow)' }} />
+              <span style={{ color: 'var(--c-yellow)' }}>已复制</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              <span>复制</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre
+        className={`p-4 md:p-5 font-mono-code text-xs md:text-sm overflow-x-auto leading-relaxed ${className}`}
+      >
+        {nodes}
+      </pre>
+    </div>
   );
 }
