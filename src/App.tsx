@@ -11,7 +11,7 @@ export default function App() {
   return (
     <Routes>
       <Route
-        path="/"
+        path="*"
         element={
           lesson ? (
             <LessonPage

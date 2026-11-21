@@ -11,11 +11,11 @@ const tabs = [
 /* ---------- 1. 上下文五层 ---------- */
 function ContextDiagram() {
   const layers = [
-    { name: '规则层', desc: '能做什么、不能做什么', no: '临时查询结果', color: 'var(--c-purple)' },
-    { name: '请求层', desc: '用户此刻的目标与偏好', no: '服务端密钥', color: 'var(--c-blue)' },
-    { name: '能力层', desc: '工具说明与参数结构', no: '工具内部实现全文', color: 'var(--c-orange)' },
-    { name: '观察层', desc: '工具结果、错误与来源', no: '未标注出处的猜测', color: 'var(--c-green)' },
-    { name: '历史层', desc: '必要对话、摘要与任务状态', no: '无关的旧聊天', color: '#8a6d00' },
+    { name: '规则层', desc: '固定前缀、权限边界与停止条件', no: '每秒跳动的时间戳（保前缀缓存）', color: 'var(--c-purple)' },
+    { name: '请求层', desc: '用户目标、偏好与转义 @引用', no: '服务端密钥与未鉴权信任', color: 'var(--c-blue)' },
+    { name: '能力层', desc: '工具说明、并发档与参数规范', no: '工具内部实现全文', color: 'var(--c-orange)' },
+    { name: '观察层', desc: '限流/落盘后的精简结果、状态与来源', no: 'UI 富卡片、及误把 Read 自己落盘', color: 'var(--c-green)' },
+    { name: '历史层', desc: '成对对话、快照与末尾增量提醒', no: '无关旧聊天或破坏前缀的回改', color: '#8a6d00' },
   ];
   return (
     <div className="grid md:grid-cols-[1fr_auto_1fr] gap-6 items-center">
@@ -37,12 +37,12 @@ function ContextDiagram() {
         <path d="M8 60 H44 M36 48 L50 60 L36 72" stroke="var(--ink)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       <div className="ink-card p-6 text-center" style={{ background: '#efe8d4' }}>
-        <p className="chapter-stamp text-xs opacity-60">模型当前视野</p>
+        <p className="chapter-stamp text-xs opacity-60">前缀冻结 · 增量后置</p>
         <p className="font-serif-sc font-black text-2xl mt-2">据此选择<br />下一步</p>
-        <p className="text-sm mt-3 opacity-75 leading-relaxed">回答 · 调用工具<br />停止 · 求助</p>
+        <p className="text-sm mt-3 opacity-75 leading-relaxed">动态变化走末尾提醒块<br />UI 卡片与秘密留模型外</p>
         <div className="mt-4 pt-4 border-t-2 dashed-ink text-xs leading-relaxed" style={{ color: 'var(--c-purple)' }}>
           <ShieldAlert className="w-4 h-4 inline mr-1" />
-          观察层数据不可信：提示注入防线在程序各层，不在提示词末尾
+          观察与展示标签不可信：服务端永远按真实 ID 重新鉴权
         </div>
       </div>
     </div>
@@ -52,9 +52,9 @@ function ContextDiagram() {
 /* ---------- 2. Tool / Skill / MCP ---------- */
 function TSMDiagram() {
   const cols = [
-    { name: 'Tool 工具', key: '能执行什么动作', ex: 'get_order(order_id)', color: 'var(--c-orange)', note: '结构化参数 + 服务端权限' },
-    { name: 'Skill 技能', key: '这类任务该怎么做', ex: '订单客服处理手册', color: 'var(--c-yellow)', note: '元数据常驻，命中再读正文' },
-    { name: 'MCP 协议', key: '外部能力怎样标准接入', ex: '订单系统 MCP server', color: 'var(--c-green)', note: '连接成功 ≠ 授权成功' },
+    { name: 'Tool 工具', key: '能执行什么动作', ex: 'get_order(order_id)', color: 'var(--c-orange)', note: '坏 JSON 直报、按入参分并发档' },
+    { name: 'Skill 技能', key: '这类任务该怎么做', ex: '订单客服处理手册', color: 'var(--c-yellow)', note: '目录限预算；压缩/过期需重读 Ready' },
+    { name: 'MCP 协议', key: '外部能力怎样标准接入', ex: '订单系统 MCP server', color: 'var(--c-green)', note: '后台预热 + 按需拉取；连接 ≠ 授权' },
   ];
   return (
     <div>
@@ -73,7 +73,7 @@ function TSMDiagram() {
         <span className="px-4 py-2 rounded-full border-2 font-bold" style={{ borderColor: 'var(--ink)', background: '#fffdf6' }}>
           Agent：此刻下一步选什么
         </span>
-        <span className="opacity-60">→ 先鉴权，再调用工具</span>
+        <span className="opacity-60">→ 先核新鲜度与权限，再分叉防嵌套或执行调用</span>
       </div>
     </div>
   );
@@ -82,9 +82,9 @@ function TSMDiagram() {
 /* ---------- 3. 记忆三层 ---------- */
 function MemoryDiagram() {
   const tiers = [
-    { name: '会话状态', own: '属于这次任务', life: '寿命：短', ex: '当前订单、步骤、临时结果', color: 'var(--c-blue)' },
-    { name: '长期记忆', own: '属于某个用户', life: '寿命：跨会话，可撤回', ex: '语言偏好、稳定习惯', color: 'var(--c-orange)' },
-    { name: '知识库', own: '属于组织或产品', life: '需来源、版本与权限', ex: '手册、制度、代码文档', color: 'var(--c-green)' },
+    { name: '会话状态与笔记', own: '属于这次任务', life: '分清 revision / versionId / 草稿', ex: '订单进度、工作笔记、未保存提醒', color: 'var(--c-blue)' },
+    { name: '长期记忆库', own: '属于某个主体', life: '跨会话可撤回 · 同库写入上锁', ex: '语言偏好、先读后并日期日志', color: 'var(--c-orange)' },
+    { name: '只读知识库', own: '属于组织或产品', life: '入库封装版本 · 对外检索只读', ex: '手册、制度、代码文档', color: 'var(--c-green)' },
   ];
   return (
     <div>
@@ -99,9 +99,9 @@ function MemoryDiagram() {
         ))}
       </div>
       <p className="text-center mt-6 text-sm opacity-75 leading-relaxed">
-        三者都能「查回来」，但<strong>归谁管、存多久、能信多少</strong>完全不同。先分家，再谈检索。
+        三者都能「查回来」，但<strong>归谁管、怎么加锁与防覆盖、历史图怎样控上限</strong>完全不同。先分家，再谈检索。
         <span className="inline-flex items-center gap-1 ml-2" style={{ color: 'var(--c-purple)' }}>
-          <Lock className="w-4 h-4" /> 权限要服务端把守，指望不上向量库自觉
+          <Lock className="w-4 h-4" /> 权限与未保存草稿门禁在服务端把守，指望不上向量库自觉
         </span>
       </p>
     </div>
@@ -112,9 +112,10 @@ function MemoryDiagram() {
 function AsyncDiagram() {
   const states = [
     { name: 'queued', cn: '已受理', color: 'var(--c-blue)' },
-    { name: 'running', cn: '执行中', color: 'var(--c-orange)' },
+    { name: 'running', cn: '执行/停泊', color: 'var(--c-orange)' },
     { name: 'succeeded', cn: '成功', color: 'var(--c-green)' },
     { name: 'failed', cn: '失败', color: 'var(--c-purple)' },
+    { name: 'outcome_unknown', cn: '结果未知', color: '#a04b2a' },
     { name: 'cancelled', cn: '已取消', color: '#8a6d00' },
   ];
   return (
@@ -129,15 +130,15 @@ function AsyncDiagram() {
             {i < states.length - 1 && i < 1 && (
               <svg width="30" height="16" viewBox="0 0 30 16"><path d="M2 8 H24 M18 2 L26 8 L18 14" stroke="var(--ink)" strokeWidth="2.5" fill="none" strokeLinecap="round" /></svg>
             )}
-            {i === 1 && <span className="text-xs opacity-50 mx-1">出错 / 完成 / 取消 ↓</span>}
+            {i === 1 && <span className="text-xs opacity-50 mx-1">终态分支 ↓</span>}
           </div>
         ))}
       </div>
       <div className="mt-6 grid md:grid-cols-3 gap-4 text-sm">
         {[
-          ['先受理，再执行', '先把任务记下来，把任务 ID 给调用者，后台 Worker 再慢慢干活。'],
-          ['状态由代码控制', '模型不能随手写一句「好像完成了」就算数；进了终态就不能再回到运行中。'],
-          ['号码牌是凭据', '谁提交的、能不能取消、怎么去重、结果和错误在哪，都写清楚。'],
+          ['短等停泊，通知唤醒', '长任务短等即停泊让出 Worker，凭幂等 JobNotice 唤醒续跑，不占用进程死等或轮询。'],
+          ['安全检查点插队', '立即插队只断模型流、不停掉在跑生成任务，严禁拆散 tool_use 与 tool_result 配对。'],
+          ['确定幂等与租约栅栏', '按 (轮次ID, 调用ID, 序号) 生成键，写库前事务复核租约未取消，未知结果先查再重投。'],
         ].map(([t, d]) => (
           <div key={t} className="px-4 py-3 rounded-lg border-2 dashed-ink">
             <p className="font-bold">{t}</p>

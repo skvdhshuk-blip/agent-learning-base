@@ -2,7 +2,7 @@
 
 一个面向初学者的中文互动课程网站：从一次工具调用开始，逐步讲清 Agent 的上下文、工具、证据链、Skill、MCP、记忆、验收、异步任务和多 Agent 协作。
 
-在线演示：[Agent 原来这么简单 · 图解入门](https://zpm2icatsjk5m.ok.kimi.link/)
+在线演示：[agent.skwang.uk](https://agent.skwang.uk/) · [ECS 直连](https://47.97.41.141.sslip.io/agent-learning/) · [早期演示站](https://zpm2icatsjk5m.ok.kimi.link/)
 
 ## 截图
 
@@ -58,6 +58,7 @@ Vite 会输出本地访问地址，通常是 <http://localhost:5173>。
 | `npm run build` | 类型检查并生成生产构建到 `dist/` |
 | `npm run lint` | 运行 ESLint |
 | `npm run preview` | 本地预览生产构建 |
+| `./scripts/deploy.sh` | 检查、构建并发布静态产物到 ECS |
 
 ## 项目结构
 

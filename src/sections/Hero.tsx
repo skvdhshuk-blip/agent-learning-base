@@ -4,8 +4,8 @@ import { ArrowDown, CloudRain, Wrench, Bird, MessageCircleQuestion, GraduationCa
 const charIcons = [MessageCircleQuestion, GraduationCap, Bird];
 
 const marqueeWords = [
-  '工具调用', '上下文分层', '工具定义', '证据链', 'Skill', 'MCP', '记忆', '知识库',
-  '验收条件', '任务快照', '异步状态机', '多 Agent 协作', '停止条件', '幂等', '提示注入',
+  '工具调用', '上下文分层', '前缀缓存', '工具定义', '证据链', 'Skill', 'MCP', '记忆', '知识库',
+  '验收条件', '三阶压缩', '停泊状态机', '安全检查点', '按轮隔离', '幂等', '提示注入',
 ];
 
 export default function Hero() {

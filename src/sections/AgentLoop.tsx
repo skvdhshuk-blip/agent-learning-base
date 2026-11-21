@@ -31,9 +31,9 @@ const steps: LoopStep[] = [
     icon: Cog,
     label: '程序执行',
     color: 'var(--c-orange)',
-    log: '✓ 校验参数 ✓ 鉴权 → 调用真实天气 API（密钥留在服务端）',
+    log: '✓ 解析语法 ✓ 校验参数与权限 ✓ 绑定全局幂等键 → 调用天气 API（密钥留在服务端）',
     logType: 'app',
-    detail: '应用程序负责校验、权限、网络、超时与日志。模型永远不直接碰 API。',
+    detail: '应用程序负责语法检查、参数校验、鉴权、全局 ID 绑定与取消复核。模型永远不直接碰 API。',
   },
   {
     icon: PackageCheck,
@@ -41,7 +41,7 @@ const steps: LoopStep[] = [
     color: 'var(--c-green)',
     log: '{"city":"杭州","condition":"中雨","high_c":28,"low_c":26}',
     logType: 'tool',
-    detail: '短而清楚的结构化结果，用 call_id 绑定回原请求，作为新观察回到消息历史。',
+    detail: '短而清楚的结构化结果，与原 call_id 严格成对闭合（即使中断或跳过也补齐结果）回到历史。',
   },
   {
     icon: Flag,
@@ -49,7 +49,7 @@ const steps: LoopStep[] = [
     color: 'var(--c-yellow)',
     log: '杭州今天有中雨，26–28℃，出门请带伞。要现在创建提醒吗？',
     logType: 'final',
-    detail: '模型看到结果后决定：直接回答、继续调用别的工具，或命中停止条件结束循环。',
+    detail: '模型看到结果后决定回答或继续调用；接近上限则先提示收尾且派发前整批拦截，并防多步周期死循环。',
   },
 ];
 
